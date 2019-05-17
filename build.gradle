@@ -44,7 +44,6 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // spigot
@@ -59,6 +58,7 @@ dependencies {
     // dagger 2x
     compile 'com.google.dagger:dagger:2.22.1'
     kapt 'com.google.dagger:dagger-compiler:2.22.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 compileKotlin {
@@ -68,8 +68,23 @@ compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+task copyJar {
+    doLast {
+        copy {
+            from shadowJar.archivePath
+            into "../minecraft test servers/Bungeecord/plugins"
+        }
+        copy {
+            from shadowJar.archivePath
+            into "../minecraft test servers/Spigot/plugins"
+        }
+    }
+}
+
+copyJar.dependsOn shadowJar
+
 task buildPanoCore {
 }
 
-buildPanoCore.dependsOn shadowJar
 buildPanoCore.dependsOn build
+buildPanoCore.dependsOn copyJar
