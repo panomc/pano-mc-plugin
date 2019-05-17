@@ -1,0 +1,1 @@
+/home/kahverengi/Projeler/Pano/Pano Core/build/classes/kotlin/main/com/panomc/plugins/panoCore/bungee/BungeeMain.class

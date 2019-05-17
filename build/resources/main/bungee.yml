@@ -1,0 +1,4 @@
+name: AntikAuth
+main: com.panomc.plugins.panoCore.bungee.BungeeMain
+version: 1.0
+author: Pano MC

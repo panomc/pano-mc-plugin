@@ -1,0 +1,5 @@
+.idea
+!libs
+build
+.gradle
+out
