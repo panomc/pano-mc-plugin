@@ -3,9 +3,9 @@ package com.panomc.plugins.pano.spigot
 import com.panomc.plugins.pano.core.di.component.DaggerSpigotComponent
 import com.panomc.plugins.pano.core.di.component.SpigotComponent
 import com.panomc.plugins.pano.core.di.module.LoggerModule
-import com.panomc.plugins.pano.core.di.module.SpigotConfigurationModule
-import com.panomc.plugins.pano.core.di.module.SpigotPluginModule
 import com.panomc.plugins.pano.core.di.module.VertxModule
+import com.panomc.plugins.pano.core.di.module.spigot.SpigotConfigurationModule
+import com.panomc.plugins.pano.core.di.module.spigot.SpigotPluginModule
 import com.panomc.plugins.pano.spigot.ui.main.MainPresenter
 import com.panomc.plugins.pano.spigot.ui.main.MainPresenterImpl
 import io.vertx.core.Vertx
@@ -34,9 +34,9 @@ class SpigotMain : JavaPlugin() {
     }
 
     companion object {
-        private lateinit var component: SpigotComponent
+        private lateinit var mComponent: SpigotComponent
 
-        internal fun getComponent() = component
+        internal fun getComponent() = mComponent
     }
 
     private fun createConfig() {
@@ -64,7 +64,7 @@ class SpigotMain : JavaPlugin() {
 
         logger.info("Injecting modules.")
 
-        component = mPluginComponent
+        mComponent = mPluginComponent
 
         logger.info("Initializing plugin.")
 

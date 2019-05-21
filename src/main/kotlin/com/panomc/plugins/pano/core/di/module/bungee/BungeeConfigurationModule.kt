@@ -1,4 +1,4 @@
-package com.panomc.plugins.pano.core.di.module
+package com.panomc.plugins.pano.core.di.module.bungee
 
 import com.panomc.plugins.pano.bungee.util.Config
 import dagger.Module

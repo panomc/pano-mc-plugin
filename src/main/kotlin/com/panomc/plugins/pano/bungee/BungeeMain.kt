@@ -6,10 +6,10 @@ import com.panomc.plugins.pano.bungee.ui.main.MainPresenterImpl
 import com.panomc.plugins.pano.bungee.util.Config
 import com.panomc.plugins.pano.core.di.component.BungeeComponent
 import com.panomc.plugins.pano.core.di.component.DaggerBungeeComponent
-import com.panomc.plugins.pano.core.di.module.BungeeConfigurationModule
-import com.panomc.plugins.pano.core.di.module.BungeePluginModule
 import com.panomc.plugins.pano.core.di.module.LoggerModule
 import com.panomc.plugins.pano.core.di.module.VertxModule
+import com.panomc.plugins.pano.core.di.module.bungee.BungeeConfigurationModule
+import com.panomc.plugins.pano.core.di.module.bungee.BungeePluginModule
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import net.md_5.bungee.api.plugin.Plugin
@@ -47,9 +47,9 @@ class BungeeMain : Plugin() {
     }
 
     companion object {
-        private lateinit var component: BungeeComponent
+        private lateinit var mComponent: BungeeComponent
 
-        internal fun getComponent() = component
+        internal fun getComponent() = mComponent
     }
 
     override fun onEnable() {
@@ -57,7 +57,7 @@ class BungeeMain : Plugin() {
 
         logger.info("Initializing plugin.")
 
-        component = mPluginComponent
+        mComponent = mPluginComponent
 
         initializeCommands()
 

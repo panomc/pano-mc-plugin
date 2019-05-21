@@ -19,6 +19,6 @@ class MainPresenterImpl : MainPresenter {
     private fun isPlatformConfigured() = !plugin.config.getString("platform.token").isNullOrEmpty()
 
     override fun onServerStart() {
-        serverEventPresenter.onStart(isPlatformConfigured(), plugin.logger)
+        serverEventPresenter.onStart(isPlatformConfigured())
     }
 }
