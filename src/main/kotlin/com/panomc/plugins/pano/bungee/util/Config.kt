@@ -1,4 +1,4 @@
-package com.panomc.plugins.panoCore.bungee.util
+package com.panomc.plugins.pano.bungee.util
 
 import com.google.common.io.ByteStreams
 import net.md_5.bungee.config.Configuration

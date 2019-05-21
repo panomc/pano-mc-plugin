@@ -1,4 +1,4 @@
-package com.panomc.plugins.panoCore.di.module
+package com.panomc.plugins.pano.core.di.module
 
 import dagger.Module
 import dagger.Provides
@@ -8,7 +8,7 @@ import io.vertx.ext.web.client.WebClientOptions
 import javax.inject.Singleton
 
 @Module
-internal class WebClientModule {
+class WebClientModule {
     @Provides
     @Singleton
     fun provideMysqlClient(vertx: Vertx) = WebClient.create(vertx, WebClientOptions())

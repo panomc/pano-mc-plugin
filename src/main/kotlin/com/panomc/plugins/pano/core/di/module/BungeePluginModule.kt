@@ -1,4 +1,4 @@
-package com.panomc.plugins.panoCore.di.module
+package com.panomc.plugins.pano.core.di.module
 
 import dagger.Module
 import dagger.Provides
@@ -6,9 +6,9 @@ import net.md_5.bungee.api.plugin.Plugin
 import javax.inject.Singleton
 
 @Module
-internal class BungeePluginModule(@Singleton private val plugin: Plugin) {
+class BungeePluginModule(@Singleton private val mPlugin: Plugin) {
 
     @Provides
     @Singleton
-    fun providePlugin() = plugin
+    fun providePlugin() = mPlugin
 }

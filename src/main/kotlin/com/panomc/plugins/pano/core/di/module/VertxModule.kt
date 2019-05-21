@@ -1,4 +1,4 @@
-package com.panomc.plugins.panoCore.di.module
+package com.panomc.plugins.pano.core.di.module
 
 import dagger.Module
 import dagger.Provides
@@ -6,9 +6,9 @@ import io.vertx.core.Vertx
 import javax.inject.Singleton
 
 @Module
-internal class VertxModule(private val vertx: Vertx) {
+class VertxModule(@Singleton private val mVertx: Vertx) {
 
     @Provides
     @Singleton
-    fun provideVertx() = vertx
+    fun provideVertx() = mVertx
 }
