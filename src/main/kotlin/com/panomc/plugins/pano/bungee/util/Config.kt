@@ -1,6 +1,7 @@
 package com.panomc.plugins.pano.bungee.util
 
 import com.google.common.io.ByteStreams
+import com.panomc.plugins.pano.core.util.ConfigHelper
 import net.md_5.bungee.config.Configuration
 import net.md_5.bungee.config.ConfigurationProvider
 import net.md_5.bungee.config.YamlConfiguration
@@ -9,8 +10,9 @@ import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.logging.Logger
 
-class Config(private val dataFolder: File, private val logger: Logger, private val configFileInJar: InputStream) {
-    private lateinit var configuration: Configuration
+class Config(private val mDataFolder: File, private val mLogger: Logger, private val mConfigFileInJar: InputStream) :
+    ConfigHelper {
+    private lateinit var mConfiguration: Configuration
 
     init {
         if (!isDataFolderExists() && !isDataFolderSuccessfullyCreated())
@@ -21,27 +23,27 @@ class Config(private val dataFolder: File, private val logger: Logger, private v
         if (!configFile.exists() && !createConfigFileSuccess(configFile))
             sendUnableToLoadConfigFileErrorMessage("Config can't created or loaded")
         else
-            configuration = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(configFile)
+            mConfiguration = ConfigurationProvider.getProvider(YamlConfiguration::class.java).load(configFile)
     }
 
     private fun getConfigFile(): File {
-        return File(dataFolder, "config.yml")
+        return File(mDataFolder, "config.yml")
     }
 
     fun getConfiguration(): Configuration {
-        return configuration
+        return mConfiguration
     }
 
     private fun sendUnableToLoadConfigFileErrorMessage(cause: String) {
-        logger.severe("Unable to load config file. Because: $cause")
+        mLogger.severe("Unable to load config file. Because: $cause")
     }
 
     private fun isDataFolderExists(): Boolean {
-        return this.dataFolder.exists()
+        return this.mDataFolder.exists()
     }
 
     private fun isDataFolderSuccessfullyCreated(): Boolean {
-        return dataFolder.mkdir()
+        return mDataFolder.mkdir()
     }
 
     private fun createConfigFileSuccess(configFile: File): Boolean {
@@ -57,7 +59,7 @@ class Config(private val dataFolder: File, private val logger: Logger, private v
                 val out = FileOutputStream(configFile)
 
                 try {
-                    ByteStreams.copy(this.configFileInJar, out)
+                    ByteStreams.copy(this.mConfigFileInJar, out)
 
                 } catch (localThrowable1: Throwable) {
                     throw localThrowable1
@@ -70,17 +72,28 @@ class Config(private val dataFolder: File, private val logger: Logger, private v
             } finally {
                 if (localThrowable4 != null) {
                     try {
-                        configFileInJar.close()
+                        mConfigFileInJar.close()
 
                     } catch (localThrowable3: Throwable) {
                         throw localThrowable3
                     }
                 } else {
-                    this.configFileInJar.close()
+                    this.mConfigFileInJar.close()
                 }
             }
 
             return true
         }
     }
+
+    override fun set(path: String, value: Any?) {
+        mConfiguration.set(path, value)
+    }
+
+    override fun saveConfig() {
+        ConfigurationProvider.getProvider(YamlConfiguration::class.java)
+            .save(mConfiguration, File(mDataFolder, "config.yml"))
+    }
+
+    override fun getString(path: String): String? = mConfiguration.getString(path)
 }
