@@ -33,6 +33,7 @@ class PlatformConnectorPresenterImpl(
                         .put("maxPlayerCount", mServerConfiguration.getMaxPlayerCount())
                         .put("serverType", mServerConfiguration.serverType)
                         .put("serverVersion", mServerConfiguration.serverVersion)
+                        .put("status", "online")
                 ) { apiRequest ->
                     if (apiRequest.succeeded()) {
                         try {
@@ -81,6 +82,7 @@ class PlatformConnectorPresenterImpl(
                         .put("maxPlayerCount", mServerConfiguration.getMaxPlayerCount())
                         .put("serverType", mServerConfiguration.serverType)
                         .put("serverVersion", mServerConfiguration.serverVersion)
+                        .put("status", "online")
                 ) { apiRequest ->
                     if (apiRequest.succeeded()) {
                         val result = try {

@@ -24,25 +24,26 @@ class CommandPresenterImpl(
 
                 mPlatformConnectorPresenter.connectNewPlatform(platformAddress, platformCode)
                     .setHandler { connectNewPlatform ->
-                        if (connectNewPlatform.result() == "ok") {
-                            commandPresenterHelper.sendMessage(
-                                commandSender,
-                                "&eToken saved, please give permission on panel of Pano Platform to this server."
-                            )
+                        when {
+                            connectNewPlatform.result() == "ok" -> {
+                                commandPresenterHelper.sendMessage(
+                                    commandSender,
+                                    "&eToken saved, please give permission on panel of Pano Platform to this server."
+                                )
 
-                            mScheduleHelper.startTask {
-                                mPlatformConnectorPresenter.connectPlatform()
+                                mScheduleHelper.startTask {
+                                    mPlatformConnectorPresenter.connectPlatform()
+                                }
                             }
-                        } else if (connectNewPlatform.result() == "FAILED_TO_CONNECT")
-                            commandPresenterHelper.sendMessage(
+                            connectNewPlatform.result() == "FAILED_TO_CONNECT" -> commandPresenterHelper.sendMessage(
                                 commandSender,
                                 "&cCouldn't connect to Pano Platform. Check your information."
                             )
-                        else
-                            commandPresenterHelper.sendMessage(
+                            else -> commandPresenterHelper.sendMessage(
                                 commandSender,
                                 "&c${connectNewPlatform.result()}"
                             )
+                        }
                     }
             } else
                 showConnectArgumentUsage(commandSender, commandPresenterHelper)
