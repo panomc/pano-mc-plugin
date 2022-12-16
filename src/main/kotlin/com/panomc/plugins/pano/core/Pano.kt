@@ -11,6 +11,7 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import java.util.jar.Manifest
 
 
 @Boot
@@ -24,7 +25,35 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
             Vertx.vertx(options)
         }
 
-        val VERSION = "1.0.0"
+        private val mode by lazy {
+            try {
+                val urlClassLoader = ClassLoader.getSystemClassLoader()
+                val manifestUrl = urlClassLoader.getResourceAsStream("META-INF/MANIFEST.MF")
+                val manifest = Manifest(manifestUrl)
+
+                manifest.mainAttributes.getValue("MODE").toString()
+            } catch (e: Exception) {
+                "RELEASE"
+            }
+        }
+
+        val ENVIRONMENT =
+            if (mode != "DEVELOPMENT" && System.getenv("EnvironmentType").isNullOrEmpty())
+                EnvironmentType.RELEASE
+            else
+                EnvironmentType.DEVELOPMENT
+
+        val VERSION by lazy {
+            try {
+                val urlClassLoader = ClassLoader.getSystemClassLoader()
+                val manifestUrl = urlClassLoader.getResourceAsStream("META-INF/MANIFEST.MF")
+                val manifest = Manifest(manifestUrl)
+
+                manifest.mainAttributes.getValue("VERSION").toString()
+            } catch (e: Exception) {
+                System.getenv("PanoPluginVersion").toString()
+            }
+        }
 
         internal fun init(panoPluginMain: PanoPluginMain): Pano {
             val pano = Pano(panoPluginMain)
@@ -34,6 +63,10 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
             }
 
             return pano
+        }
+
+        enum class EnvironmentType {
+            DEVELOPMENT, RELEASE
         }
     }
 

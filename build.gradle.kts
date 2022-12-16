@@ -10,6 +10,10 @@ plugins {
 group = "com.panomc.plugins"
 version = "1.0"
 
+val buildType = "alpha"
+val timeStamp: String by project
+val fullVersion = if (project.hasProperty("timeStamp")) "$version-$buildType-$timeStamp" else "$version-$buildType"
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -57,8 +61,20 @@ tasks {
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
+
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
+    }
+
+    register("copyJarToRoot") {
+        doLast {
+            copy {
+                from(shadowJar.get().archiveFile.get().asFile.absolutePath)
+                into("./")
+            }
+        }
+
+        dependsOn(shadowJar)
     }
 
     register("copyJar") {
@@ -77,13 +93,40 @@ tasks {
         dependsOn(shadowJar)
     }
 
-    register("buildPanoCore") {
-        dependsOn("build")
-
-        dependsOn("copyJar")
+    build {
+        dependsOn("copyJarToRoot")
     }
 
-    build {
+    register("buildDev") {
+        dependsOn("build")
+    }
+
+    // This task builds and copys jar into server folders for test
+    register("buildPluginDev") {
         dependsOn("copyJar")
+        dependsOn("build")
+    }
+
+    shadowJar {
+        manifest {
+            val attrMap = mutableMapOf<String, String>()
+
+            if (project.gradle.startParameter.taskNames.contains("buildDev") || project.gradle.startParameter.taskNames.contains(
+                    "buildPluginDev"
+                )
+            )
+                attrMap["MODE"] = "DEVELOPMENT"
+
+            attrMap["VERSION"] = fullVersion
+            attrMap["BUILD_TYPE"] = buildType
+
+            attributes(attrMap)
+        }
+
+        if (project.hasProperty("timeStamp")) {
+            archiveFileName.set("Pano-MC-plugin-${timeStamp}.jar")
+        } else {
+            archiveFileName.set("Pano-MC-plugin.jar")
+        }
     }
 }
