@@ -1,105 +1,84 @@
 package com.panomc.plugins.pano.spigot
 
-import com.panomc.plugins.pano.core.di.component.DaggerSpigotComponent
-import com.panomc.plugins.pano.core.di.component.SpigotComponent
-import com.panomc.plugins.pano.core.di.module.*
-import com.panomc.plugins.pano.core.di.module.spigot.SpigotPluginModule
-import com.panomc.plugins.pano.core.util.ScheduleHelper
-import com.panomc.plugins.pano.spigot.ui.main.MainPresenter
-import com.panomc.plugins.pano.spigot.ui.main.MainPresenterImpl
-import com.panomc.plugins.pano.spigot.util.Config
-import com.panomc.plugins.pano.spigot.util.SpigotServerConfiguration
-import io.vertx.core.Vertx
-import io.vertx.core.VertxOptions
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
+import com.panomc.plugins.pano.core.Pano
+import com.panomc.plugins.pano.core.command.Command
+import com.panomc.plugins.pano.core.helper.PanoPluginMain
+import com.panomc.plugins.pano.core.helper.ServerData
+import org.bukkit.Bukkit
+import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.File
 
-class SpigotMain : JavaPlugin(), ScheduleHelper {
-    private val mVertxOptions = VertxOptions()
-    private val mVertx = Vertx.vertx(mVertxOptions)
-
-    private var mTaskID = 0
-
-    private val mMainPresenter: MainPresenter by lazy {
-        MainPresenterImpl()
-    }
-
-    private val mPluginComponent by lazy {
-        DaggerSpigotComponent
-            .builder()
-            .configModule(ConfigModule(Config(this, config)))
-            .loggerModule(LoggerModule(logger))
-            .vertxModule(VertxModule(mVertx))
-            .spigotPluginModule(SpigotPluginModule(this))
-            .serverConfigurationModule(
-                ServerConfigurationModule(
-                    SpigotServerConfiguration(this)
-                )
-            )
-            .scheduleHelperModule(ScheduleHelperModule(this))
-            .build()
-    }
-
-    companion object {
-        private lateinit var mComponent: SpigotComponent
-
-        internal fun getComponent() = mComponent
-    }
-
-    private fun createConfig() {
-        try {
-            if (!dataFolder.exists())
-                dataFolder.mkdirs()
-
-            val file = File(dataFolder, "config.yml")
-
-            if (!file.exists()) {
-                logger.info("Config.yml not found, creating!")
-                saveDefaultConfig()
-            } else
-                logger.info("Config.yml found, loading!")
-
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+class SpigotMain : JavaPlugin(), PanoPluginMain {
+    private lateinit var pano: Pano
+    private val commands = mutableListOf<SpigotCommand>()
+    private val scheduledTasks = mutableMapOf<() -> Unit, Int>()
+    private val serverData by lazy { SpigotServerData(this) }
 
     override fun onEnable() {
-        logger.info("Getting config.")
-
-        createConfig()
-
-        logger.info("Injecting modules.")
-
-        mComponent = mPluginComponent
-
-        logger.info("Initializing plugin.")
+        pano = Pano.init(this)
 
         server.scheduler.scheduleSyncDelayedTask(this) {
-            mMainPresenter.onServerStart()
+            if (::pano.isInitialized) {
+                pano.onServerStart()
+            }
         }
-
-        logger.info("Done.")
     }
 
     override fun onDisable() {
-        server.scheduler.cancelTasks(this)
+        if (::pano.isInitialized) {
+            pano.disable()
+        }
     }
 
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<String>): Boolean {
-        if (label.equals("pano", true))
-            mMainPresenter.onPanoCommand(sender, args)
+    override fun registerCommands(commands: List<Command>) {
+        val commandMap = getCommandMap()
 
-        return super.onCommand(sender, command, label, args)
+        commands
+            .map { SpigotCommand(it) }
+            .forEach { command ->
+                this.commands.add(command)
+
+                commandMap.register(name, command)
+            }
     }
 
-    override fun startTask(callback: () -> Unit) {
-        mTaskID = server.scheduler.scheduleSyncRepeatingTask(this, callback, 1, 20)
+    override fun unregisterCommands(commands: List<Command>) {
+        val commandMap = getCommandMap()
+
+        this.commands
+            .forEach { command ->
+                command.unregister(commandMap)
+            }
+
+        this.commands.clear()
     }
 
-    override fun stopTask() {
-        server.scheduler.cancelTask(mTaskID)
+    private fun getCommandMap(): CommandMap {
+        val commandMapField = Bukkit.getServer().javaClass.getDeclaredField("commandMap")
+
+        commandMapField.isAccessible = true
+
+        return commandMapField.get(Bukkit.getServer()) as CommandMap
     }
+
+    override fun registerSchedule(task: () -> Unit) {
+        if (scheduledTasks.containsKey(task)) {
+            stopSchedule(task)
+        }
+
+        scheduledTasks[task] = server.scheduler.scheduleSyncRepeatingTask(this, task, 1, 20)
+    }
+
+    override fun stopSchedule(task: () -> Unit) {
+        scheduledTasks[task]?.let { server.scheduler.cancelTask(it) }
+        scheduledTasks.remove(task)
+    }
+
+    override fun unregisterSchedules(tasks: List<() -> Unit>) {
+        tasks.forEach { task ->
+            stopSchedule(task)
+        }
+    }
+
+    override fun getServerData(): ServerData = serverData
 }

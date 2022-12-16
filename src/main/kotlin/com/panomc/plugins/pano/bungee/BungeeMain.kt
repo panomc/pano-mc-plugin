@@ -1,101 +1,65 @@
 package com.panomc.plugins.pano.bungee
 
-import com.panomc.plugins.pano.bungee.command.PanoCommand
-import com.panomc.plugins.pano.bungee.ui.main.MainPresenter
-import com.panomc.plugins.pano.bungee.ui.main.MainPresenterImpl
-import com.panomc.plugins.pano.bungee.util.BungeeServerConfiguration
-import com.panomc.plugins.pano.bungee.util.Config
-import com.panomc.plugins.pano.core.di.component.BungeeComponent
-import com.panomc.plugins.pano.core.di.component.DaggerBungeeComponent
-import com.panomc.plugins.pano.core.di.module.*
-import com.panomc.plugins.pano.core.di.module.bungee.BungeePluginModule
-import com.panomc.plugins.pano.core.util.ScheduleHelper
-import io.vertx.core.Vertx
-import io.vertx.core.VertxOptions
+import com.panomc.plugins.pano.core.Pano
+import com.panomc.plugins.pano.core.command.Command
+import com.panomc.plugins.pano.core.helper.PanoPluginMain
+import com.panomc.plugins.pano.core.helper.ServerData
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.scheduler.ScheduledTask
 import java.util.concurrent.TimeUnit
 
-class BungeeMain : Plugin(), ScheduleHelper {
-    private val mVertxOptions = VertxOptions()
-    private val mVertx = Vertx.vertx(mVertxOptions)
-
-    private val mMainPresenter: MainPresenter by lazy {
-        MainPresenterImpl()
-    }
-
-    private val mCommands by lazy {
-        listOf(
-            PanoCommand()
-        )
-    }
-
-    private lateinit var mScheduledTask: ScheduledTask
-
-    private val mPluginComponent by lazy {
-        DaggerBungeeComponent
-            .builder()
-            .configModule(
-                ConfigModule(
-                    Config(
-                        dataFolder,
-                        logger,
-                        getResourceAsStream("config.yml")
-                    )
-                )
-            )
-            .loggerModule(LoggerModule(logger))
-            .bungeePluginModule(BungeePluginModule(this))
-            .vertxModule(VertxModule(mVertx))
-            .serverConfigurationModule(
-                ServerConfigurationModule(
-                    BungeeServerConfiguration(this)
-                )
-            )
-            .scheduleHelperModule(ScheduleHelperModule(this))
-            .build()
-    }
-
-    companion object {
-        private lateinit var mComponent: BungeeComponent
-
-        internal fun getComponent() = mComponent
-    }
+class BungeeMain : Plugin(), PanoPluginMain {
+    private lateinit var pano: Pano
+    private val scheduledTasks = mutableMapOf<() -> Unit, ScheduledTask>()
+    private val serverData by lazy { BungeeServerData(this) }
 
     override fun onEnable() {
-//        logger.info("Injecting modules.")
+        pano = Pano.init(this)
 
-        logger.info("Initializing plugin.")
-
-        mComponent = mPluginComponent
-
-        initializeCommands()
-
-        logger.info("Done.")
-
-        mMainPresenter.onServerStart()
+        pano.onServerStart()
     }
 
     override fun onDisable() {
-        proxy.scheduler.cancel(this)
-    }
-
-    private fun initializeCommands() {
-        mCommands.forEach { command ->
-            proxy.pluginManager.registerCommand(this, command)
+        if (::pano.isInitialized) {
+            pano.disable()
         }
     }
 
-    override fun startTask(callback: () -> Unit) {
-        mScheduledTask = proxy.scheduler.schedule(this, {
-            callback.invoke()
+    override fun registerCommands(commands: List<Command>) {
+        commands
+            .map { BungeeCommand(it) }
+            .forEach { command ->
+                logger.info("command registered")
+                proxy.pluginManager.registerCommand(this, command)
+            }
+    }
 
-            startTask(callback)
+    override fun unregisterCommands(commands: List<Command>) {
+        proxy.pluginManager.unregisterCommands(this)
+    }
+
+    override fun registerSchedule(task: () -> Unit) {
+        if (scheduledTasks.containsKey(task)) {
+            stopSchedule(task)
+        }
+
+        scheduledTasks[task] = proxy.scheduler.schedule(this, {
+            task.invoke()
+
+            registerSchedule(task)
         }, 1, TimeUnit.SECONDS)
     }
 
-    override fun stopTask() {
-        if (::mScheduledTask.isInitialized)
-            mScheduledTask.cancel()
+    override fun stopSchedule(task: () -> Unit) {
+        scheduledTasks[task]?.cancel()
+        scheduledTasks.remove(task)
     }
+
+    override fun unregisterSchedules(tasks: List<() -> Unit>) {
+        tasks.forEach { task ->
+            stopSchedule(task)
+        }
+    }
+
+    override fun getServerData(): ServerData = serverData
 }

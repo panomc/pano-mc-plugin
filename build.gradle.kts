@@ -1,51 +1,57 @@
+val vertxVersion = "4.3.6"
+
 plugins {
     java
-    kotlin("jvm") version "1.3.70"
-    kotlin("kapt") version "1.3.70"
-    id("com.github.johnrengelman.shadow") version "5.0.0"
+    kotlin("jvm") version "1.7.21"
+    kotlin("kapt") version "1.7.21"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "com.panomc.plugins"
 version = "1.0"
 
-val vertxVersion = "3.8.5"
-
 repositories {
-    jcenter()
     mavenCentral()
-
+    mavenLocal()
     maven("https://oss.sonatype.org/content/repositories/iovertx-3720/")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://jitpack.io")
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
 
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     // spigot
-    compileOnly("org.spigotmc:spigot-api:1.14.1-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.19.2-R0.1-SNAPSHOT")
+
+    // bungeecord
+    compileOnly("net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT")
+
+    // paper spigot
+    compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
 
     implementation("io.vertx:vertx-core:$vertxVersion")
     implementation("io.vertx:vertx-web-client:$vertxVersion")
-
-    // bungeecord
-    compileOnly("net.md-5:bungeecord-api:1.14-SNAPSHOT")
+    implementation("io.vertx:vertx-lang-kotlin:$vertxVersion")
+    implementation("io.vertx:vertx-lang-kotlin-coroutines:$vertxVersion")
+    implementation("io.vertx:vertx-config:$vertxVersion")
+    implementation("io.vertx:vertx-config-hocon:$vertxVersion")
+    implementation("io.vertx:vertx-json-schema:$vertxVersion")
 
     // dagger 2x
-    implementation("com.google.dagger:dagger:2.22.1")
-    kapt("com.google.dagger:dagger-compiler:2.22.1")
+    implementation("com.google.dagger:dagger:2.44.2")
+    kapt("com.google.dagger:dagger-compiler:2.44.2")
 
     implementation("com.github.pwittchen.kirai:library:1.4.1")
-}
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-}
+    implementation("org.springframework:spring-context:5.3.24")
 
+    implementation("io.vertx:vertx-rx-java3:4.3.6")
+}
 
 tasks {
     compileKotlin {
