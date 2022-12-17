@@ -101,18 +101,24 @@ class PlatformManager(
             port = splitHost[1].toInt()
         }
 
+        val requestBody = JsonObject()
+
+        requestBody
+            .put("platformCode", platformCode)
+            .put("serverName", serverData.serverName())
+            .put("playerCount", serverData.playerCount())
+            .put("maxPlayerCount", serverData.maxPlayerCount())
+            .put("serverType", serverData.serverType())
+            .put("serverVersion", serverData.serverVersion())
+
+        if (pingData.favicon != null) {
+            requestBody
+                .put("favicon", pingData.favicon)
+        }
+
         val request = webClient
             .post(port, host, "/api/server/connect")
-            .sendJsonObject(
-                JsonObject()
-                    .put("platformCode", platformCode)
-                    .put("favicon", pingData.favicon)
-                    .put("serverName", serverData.serverName())
-                    .put("playerCount", serverData.playerCount())
-                    .put("maxPlayerCount", serverData.maxPlayerCount())
-                    .put("serverType", serverData.serverType())
-                    .put("serverVersion", serverData.serverVersion())
-            )
+            .sendJsonObject(requestBody)
 
         val response: HttpResponse<*>
 
