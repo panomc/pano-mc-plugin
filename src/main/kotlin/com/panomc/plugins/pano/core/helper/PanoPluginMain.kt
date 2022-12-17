@@ -20,4 +20,6 @@ interface PanoPluginMain {
     fun unregisterSchedules(tasks: List<() -> Unit>)
 
     fun getServerData(): ServerData
+
+    fun getPluginClassLoader(): ClassLoader
 }

@@ -25,10 +25,11 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
             Vertx.vertx(options)
         }
 
+        private lateinit var classLoader: ClassLoader
+
         private val mode by lazy {
             try {
-                val urlClassLoader = ClassLoader.getSystemClassLoader()
-                val manifestUrl = urlClassLoader.getResourceAsStream("META-INF/MANIFEST.MF")
+                val manifestUrl = classLoader.getResourceAsStream("META-INF/MANIFEST.MF")
                 val manifest = Manifest(manifestUrl)
 
                 manifest.mainAttributes.getValue("MODE").toString()
@@ -45,8 +46,7 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
 
         val VERSION by lazy {
             try {
-                val urlClassLoader = ClassLoader.getSystemClassLoader()
-                val manifestUrl = urlClassLoader.getResourceAsStream("META-INF/MANIFEST.MF")
+                val manifestUrl = classLoader.getResourceAsStream("META-INF/MANIFEST.MF")
                 val manifest = Manifest(manifestUrl)
 
                 manifest.mainAttributes.getValue("VERSION").toString()
@@ -56,6 +56,8 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
         }
 
         internal fun init(panoPluginMain: PanoPluginMain): Pano {
+            classLoader = panoPluginMain.getPluginClassLoader()
+
             val pano = Pano(panoPluginMain)
 
             runBlocking {

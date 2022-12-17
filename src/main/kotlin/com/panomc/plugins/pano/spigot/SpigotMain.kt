@@ -81,4 +81,6 @@ class SpigotMain : JavaPlugin(), PanoPluginMain {
     }
 
     override fun getServerData(): ServerData = serverData
+
+    override fun getPluginClassLoader(): ClassLoader = classLoader
 }

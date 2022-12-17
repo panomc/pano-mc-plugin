@@ -10,6 +10,9 @@ class PanoCommand(
 ) : com.panomc.plugins.pano.core.command.Command {
     override val name: String = "Pano"
     override val permission: String = "pano.admin"
+    override val description: String = "Runs Pano commands."
+    override val permissionMessage: String = "You do not have permission!"
+    override val usage: String = "pano"
 
     override suspend fun handler(commandSender: Any, args: Array<out String>, commandHelper: CommandHelper): Boolean {
         if (args.isEmpty()) {

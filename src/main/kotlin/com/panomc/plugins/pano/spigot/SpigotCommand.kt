@@ -8,6 +8,13 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.defaults.BukkitCommand
 
 class SpigotCommand(private val command: Command) : BukkitCommand(command.name), CommandHelper {
+    init {
+        name = command.name
+        description = command.description
+        usage = command.usage
+        permission = command.permission
+    }
+
     override fun sendMessage(commandSender: Any, message: String) {
         (commandSender as CommandSender).sendMessage(McTextUtil.translateColor(message))
     }

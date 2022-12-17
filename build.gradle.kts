@@ -111,11 +111,12 @@ tasks {
         manifest {
             val attrMap = mutableMapOf<String, String>()
 
-            if (project.gradle.startParameter.taskNames.contains("buildDev") || project.gradle.startParameter.taskNames.contains(
-                    "buildPluginDev"
-                )
-            )
+            if (
+                project.gradle.startParameter.taskNames.contains("buildDev") ||
+                project.gradle.startParameter.taskNames.contains("buildPluginDev")
+            ) {
                 attrMap["MODE"] = "DEVELOPMENT"
+            }
 
             attrMap["VERSION"] = fullVersion
             attrMap["BUILD_TYPE"] = buildType

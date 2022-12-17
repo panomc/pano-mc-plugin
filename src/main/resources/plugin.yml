@@ -4,11 +4,11 @@ version: 1.0
 author: Pano MC
 description: An advanced web platform for Minecraft servers.
 website: http://panomc.com
-commands:
-  pano:
-    description: Runs Pano commands.
-    permission: pano.admin
-    permission-message: You do not have permission!
+#commands:
+#  pano:
+#    description: Runs Pano commands.
+#    permission: pano.admin
+#    permission-message: You do not have permission!
 permissions:
   pano.admin:
     description: Allows Pano command.

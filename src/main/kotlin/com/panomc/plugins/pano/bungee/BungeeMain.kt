@@ -62,4 +62,5 @@ class BungeeMain : Plugin(), PanoPluginMain {
     }
 
     override fun getServerData(): ServerData = serverData
+    override fun getPluginClassLoader(): ClassLoader = javaClass.classLoader
 }
