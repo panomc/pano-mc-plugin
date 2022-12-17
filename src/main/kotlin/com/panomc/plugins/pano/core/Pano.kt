@@ -11,6 +11,7 @@ import io.vertx.kotlin.coroutines.CoroutineVerticle
 import io.vertx.kotlin.coroutines.await
 import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
+import java.net.URLClassLoader
 import java.util.jar.Manifest
 
 
@@ -25,12 +26,12 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
             Vertx.vertx(options)
         }
 
-        private lateinit var classLoader: ClassLoader
+        private lateinit var urlClassLoader: URLClassLoader
 
         private val mode by lazy {
             try {
-                val manifestUrl = classLoader.getResourceAsStream("META-INF/MANIFEST.MF")
-                val manifest = Manifest(manifestUrl)
+                val manifestUrl = urlClassLoader.findResource("META-INF/MANIFEST.MF")
+                val manifest = Manifest(manifestUrl.openStream())
 
                 manifest.mainAttributes.getValue("MODE").toString()
             } catch (e: Exception) {
@@ -46,8 +47,8 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
 
         val VERSION by lazy {
             try {
-                val manifestUrl = classLoader.getResourceAsStream("META-INF/MANIFEST.MF")
-                val manifest = Manifest(manifestUrl)
+                val manifestUrl = urlClassLoader.findResource("META-INF/MANIFEST.MF")
+                val manifest = Manifest(manifestUrl.openStream())
 
                 manifest.mainAttributes.getValue("VERSION").toString()
             } catch (e: Exception) {
@@ -56,7 +57,7 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
         }
 
         internal fun init(panoPluginMain: PanoPluginMain): Pano {
-            classLoader = panoPluginMain.getPluginClassLoader()
+            urlClassLoader = panoPluginMain.getPluginClassLoader()
 
             val pano = Pano(panoPluginMain)
 

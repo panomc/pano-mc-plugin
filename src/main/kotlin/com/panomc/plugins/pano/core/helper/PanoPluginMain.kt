@@ -2,6 +2,7 @@ package com.panomc.plugins.pano.core.helper
 
 import com.panomc.plugins.pano.core.command.Command
 import java.io.File
+import java.net.URLClassLoader
 import java.util.logging.Logger
 
 interface PanoPluginMain {
@@ -21,5 +22,5 @@ interface PanoPluginMain {
 
     fun getServerData(): ServerData
 
-    fun getPluginClassLoader(): ClassLoader
+    fun getPluginClassLoader(): URLClassLoader
 }

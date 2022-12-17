@@ -6,6 +6,7 @@ import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.helper.ServerData
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.scheduler.ScheduledTask
+import java.net.URLClassLoader
 import java.util.concurrent.TimeUnit
 
 class BungeeMain : Plugin(), PanoPluginMain {
@@ -62,5 +63,5 @@ class BungeeMain : Plugin(), PanoPluginMain {
     }
 
     override fun getServerData(): ServerData = serverData
-    override fun getPluginClassLoader(): ClassLoader = javaClass.classLoader
+    override fun getPluginClassLoader(): URLClassLoader = javaClass.classLoader as URLClassLoader
 }

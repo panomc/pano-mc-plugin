@@ -7,6 +7,7 @@ import com.panomc.plugins.pano.core.helper.ServerData
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
+import java.net.URLClassLoader
 
 class SpigotMain : JavaPlugin(), PanoPluginMain {
     private lateinit var pano: Pano
@@ -82,5 +83,5 @@ class SpigotMain : JavaPlugin(), PanoPluginMain {
 
     override fun getServerData(): ServerData = serverData
 
-    override fun getPluginClassLoader(): ClassLoader = classLoader
+    override fun getPluginClassLoader(): URLClassLoader = classLoader as URLClassLoader
 }
