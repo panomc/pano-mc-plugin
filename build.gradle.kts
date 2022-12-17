@@ -53,8 +53,6 @@ dependencies {
     implementation("com.github.pwittchen.kirai:library:1.4.1")
 
     implementation("org.springframework:spring-context:5.3.24")
-
-    implementation("io.vertx:vertx-rx-java3:4.3.6")
 }
 
 tasks {
