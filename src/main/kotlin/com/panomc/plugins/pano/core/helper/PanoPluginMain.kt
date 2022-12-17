@@ -23,4 +23,6 @@ interface PanoPluginMain {
     fun getServerData(): ServerData
 
     fun getPluginClassLoader(): URLClassLoader
+
+    fun translateColor(text: String): String
 }

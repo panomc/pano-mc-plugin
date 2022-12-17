@@ -5,9 +5,11 @@ import com.panomc.plugins.pano.core.command.Command
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.helper.ServerData
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.command.CommandMap
 import org.bukkit.plugin.java.JavaPlugin
 import java.net.URLClassLoader
+import java.util.logging.Logger
 
 class SpigotMain : JavaPlugin(), PanoPluginMain {
     private lateinit var pano: Pano
@@ -35,7 +37,7 @@ class SpigotMain : JavaPlugin(), PanoPluginMain {
         val commandMap = getCommandMap()
 
         commands
-            .map { SpigotCommand(it) }
+            .map { SpigotCommand(it, this) }
             .forEach { command ->
                 this.commands.add(command)
 
@@ -84,4 +86,8 @@ class SpigotMain : JavaPlugin(), PanoPluginMain {
     override fun getServerData(): ServerData = serverData
 
     override fun getPluginClassLoader(): URLClassLoader = classLoader as URLClassLoader
+
+    override fun translateColor(text: String): String = ChatColor.translateAlternateColorCodes('&', text)
+
+    override fun getLogger(): Logger = ColoredLogger()
 }

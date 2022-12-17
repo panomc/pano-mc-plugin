@@ -50,8 +50,6 @@ dependencies {
     implementation("com.google.dagger:dagger:2.44.2")
     kapt("com.google.dagger:dagger-compiler:2.44.2")
 
-    implementation("com.github.pwittchen.kirai:library:1.4.1")
-
     implementation("org.springframework:spring-context:5.3.24")
 }
 

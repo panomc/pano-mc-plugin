@@ -4,6 +4,7 @@ import com.panomc.plugins.pano.core.Pano
 import com.panomc.plugins.pano.core.command.Command
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.helper.ServerData
+import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.plugin.Plugin
 import net.md_5.bungee.api.scheduler.ScheduledTask
 import java.net.URLClassLoader
@@ -28,7 +29,7 @@ class BungeeMain : Plugin(), PanoPluginMain {
 
     override fun registerCommands(commands: List<Command>) {
         commands
-            .map { BungeeCommand(it) }
+            .map { BungeeCommand(it, this) }
             .forEach { command ->
                 logger.info("command registered")
                 proxy.pluginManager.registerCommand(this, command)
@@ -63,5 +64,8 @@ class BungeeMain : Plugin(), PanoPluginMain {
     }
 
     override fun getServerData(): ServerData = serverData
+
     override fun getPluginClassLoader(): URLClassLoader = javaClass.classLoader as URLClassLoader
+
+    override fun translateColor(text: String): String = ChatColor.translateAlternateColorCodes('&', text)
 }

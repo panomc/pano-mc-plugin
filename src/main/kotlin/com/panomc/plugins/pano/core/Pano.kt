@@ -81,14 +81,16 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
     private val logger = panoPluginMain.getLogger()
 
     override suspend fun start() {
-        println(
-            "\n" +
-                    " ______   ______     __   __     ______    \n" +
-                    "/\\  == \\ /\\  __ \\   /\\ \"-.\\ \\   /\\  __ \\   \n" +
-                    "\\ \\  _-/ \\ \\  __ \\  \\ \\ \\-.  \\  \\ \\ \\/\\ \\  \n" +
-                    " \\ \\_\\    \\ \\_\\ \\_\\  \\ \\_\\\\\"\\_\\  \\ \\_____\\ \n" +
-                    "  \\/_/     \\/_/\\/_/   \\/_/ \\/_/   \\/_____/  v${VERSION}\n" +
-                    "                                           "
+        logger.info(
+            panoPluginMain.translateColor(
+                "&9\n" +
+                        " ______   ______     __   __     ______    \n" +
+                        "/\\  == \\ /\\  __ \\   /\\ \"-.\\ \\   /\\  __ \\   \n" +
+                        "\\ \\  _-/ \\ \\  __ \\  \\ \\ \\-.  \\  \\ \\ \\/\\ \\  \n" +
+                        " \\ \\_\\    \\ \\_\\ \\_\\  \\ \\_\\\\\"\\_\\  \\ \\_____\\ \n" +
+                        "  \\/_/     \\/_/\\/_/   \\/_/ \\/_/   \\/_____/  v${VERSION}\n" +
+                        "                                           "
+            )
         )
 
         logger.info("Initializing Pano Core")

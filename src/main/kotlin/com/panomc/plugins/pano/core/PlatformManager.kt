@@ -3,8 +3,8 @@ package com.panomc.plugins.pano.core
 import ch.jamiete.mcping.MinecraftPing
 import ch.jamiete.mcping.MinecraftPingOptions
 import com.panomc.plugins.pano.core.config.ConfigManager
+import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.helper.ServerData
-import com.panomc.plugins.pano.core.util.McTextUtil
 import io.vertx.core.Vertx
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.http.*
@@ -26,7 +26,8 @@ class PlatformManager(
     private val configManager: ConfigManager,
     private val webClient: WebClient,
     private val httpClient: HttpClient,
-    private val serverData: ServerData
+    private val serverData: ServerData,
+    private val pluginMain: PanoPluginMain
 ) {
     private var webSocket: WebSocket? = null
     private var canConnect = true // to be able to cancel connection task
@@ -56,17 +57,17 @@ class PlatformManager(
     }
 
     fun start() {
-        logger.info(McTextUtil.translateColor("&eChecking is platform connection configured"))
+        logger.info(pluginMain.translateColor("&eChecking is platform connection configured"))
 
         if (!isPlatformConfigured()) {
-            logger.severe(McTextUtil.translateColor("&cThis server has not been connected to any Pano Platform!"))
-            logger.severe(McTextUtil.translateColor("""&6Type: "/pano connect <platform-address> <platform-code>" to connect Pano Platform."""))
-            logger.severe(McTextUtil.translateColor("""&6For more information please visit: http://panomc.com/platform-connect"""))
+            logger.severe(pluginMain.translateColor("&cThis server has not been connected to any Pano Platform!"))
+            logger.severe(pluginMain.translateColor("""&6Type: "/pano connect <platform-address> <platform-code>" to connect Pano Platform."""))
+            logger.severe(pluginMain.translateColor("""&6For more information please visit: http://panomc.com/platform-connect"""))
 
             return
         }
 
-        logger.info(McTextUtil.translateColor("&6Connecting to platform..."))
+        logger.info(pluginMain.translateColor("&6Connecting to platform..."))
 
         canConnect = true
         connectPlatformTask.invoke(false)
@@ -161,7 +162,7 @@ class PlatformManager(
         try {
             request.await()
         } catch (exception: Exception) {
-            logger.severe(McTextUtil.translateColor("&cError: Failed to connect Pano Platform. Reason: ${exception.message}"))
+            logger.severe(pluginMain.translateColor("&cError: Failed to connect Pano Platform. Reason: ${exception.message}"))
 
             throw Exception("&cCouldn't connect to Pano Platform. Be sure platform is up and accessible.")
         }
@@ -195,7 +196,7 @@ class PlatformManager(
                 if (body != null && body.getString("result") == "error") {
                     val error = body.getString("error")
 
-                    logger.severe(McTextUtil.translateColor(getErrorMessageByErrorCode(error)))
+                    logger.severe(pluginMain.translateColor(getErrorMessageByErrorCode(error)))
 
                     if (error == PlatformErrorCodes.INVALID_TOKEN.toString()) {
                         removePlatform()
@@ -209,14 +210,14 @@ class PlatformManager(
                 }
             }
 
-            logger.severe(McTextUtil.translateColor("&cError: Failed to connect Pano Platform. Reason: ${exception.message}"))
+            logger.severe(pluginMain.translateColor("&cError: Failed to connect Pano Platform. Reason: ${exception.message}"))
 
             connectPlatformTask.invoke(true)
 
             return
         }
 
-        logger.info(McTextUtil.translateColor("&2Connected successfully to the platform!"))
+        logger.info(pluginMain.translateColor("&2Connected successfully to the platform!"))
 
         this.webSocket = webSocket
 
@@ -232,10 +233,10 @@ class PlatformManager(
     private fun onWebSocketClosed() {
         webSocket = null
 
-        logger.info(McTextUtil.translateColor("&eDisconnected from the platform."))
+        logger.info(pluginMain.translateColor("&eDisconnected from the platform."))
 
         if (canConnect) {
-            logger.info(McTextUtil.translateColor("&eRetrying to connect..."))
+            logger.info(pluginMain.translateColor("&eRetrying to connect..."))
 
             connectPlatformTask.invoke(true)
         }

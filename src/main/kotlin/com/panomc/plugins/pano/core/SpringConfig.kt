@@ -67,7 +67,8 @@ open class SpringConfig {
         configManager,
         webClient,
         httpClient,
-        panoPluginMain.getServerData()
+        panoPluginMain.getServerData(),
+        panoPluginMain
     )
 
     @Bean
