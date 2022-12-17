@@ -122,6 +122,8 @@ tasks {
             attributes(attrMap)
         }
 
+        relocate("io.netty", "vertx.io.netty")
+
         if (project.hasProperty("timeStamp")) {
             archiveFileName.set("Pano-MC-plugin-${timeStamp}.jar")
         } else {
