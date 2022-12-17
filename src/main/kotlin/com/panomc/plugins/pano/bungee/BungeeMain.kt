@@ -31,7 +31,6 @@ class BungeeMain : Plugin(), PanoPluginMain {
         commands
             .map { BungeeCommand(it, this) }
             .forEach { command ->
-                logger.info("command registered")
                 proxy.pluginManager.registerCommand(this, command)
             }
     }
