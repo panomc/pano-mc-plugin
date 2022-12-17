@@ -8,6 +8,8 @@ interface ServerData {
 
     fun hostAddress(): String = InetAddress.getLocalHost().hostAddress
 
+    fun motd(): String?
+
     fun port(): Int
 
     fun serverType(): ServerType

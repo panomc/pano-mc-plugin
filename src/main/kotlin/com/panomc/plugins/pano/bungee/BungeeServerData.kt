@@ -10,6 +10,8 @@ class BungeeServerData(private val plugin: Plugin) : ServerData {
 
     override fun hostAddress(): String = (plugin.proxy.config.listeners.toList()[0] as ListenerInfo).host.hostString
 
+    override fun motd(): String? = null
+
     override fun port(): Int = (plugin.proxy.config.listeners.toList()[0] as ListenerInfo).host.port
 
     override fun serverType(): ServerType = ServerType.BUNGEECORD

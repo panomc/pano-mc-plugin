@@ -9,6 +9,8 @@ class SpigotServerData(private val plugin: JavaPlugin) : ServerData {
 
     override fun hostAddress(): String = plugin.server.ip
 
+    override fun motd(): String = plugin.server.motd
+
     override fun port(): Int = plugin.server.port
 
     override fun serverType(): ServerType = ServerType.SPIGOT

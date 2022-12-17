@@ -111,10 +111,17 @@ class PlatformManager(
             .put("maxPlayerCount", serverData.maxPlayerCount())
             .put("serverType", serverData.serverType())
             .put("serverVersion", serverData.serverVersion())
+            .put("host", serverData.hostAddress())
+            .put("port", serverData.port())
 
         if (pingData.favicon != null) {
             requestBody
                 .put("favicon", pingData.favicon)
+        }
+
+        if (pingData.description != null) {
+            requestBody
+                .put("motd", pingData.description.text)
         }
 
         val request = webClient
