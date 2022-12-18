@@ -48,6 +48,15 @@ class PanoCommand(
         val platformAddress = args[1]
         val platformCode = args[2]
 
+        if (platformManager.isPlatformConfigured()) {
+            commandHelper.sendMessage(
+                commandSender,
+                "&cAlready connected to a platform. &eYou can disconnect by: /pano disconnect"
+            )
+
+            return true
+        }
+
         commandHelper.sendMessage(commandSender, "&eConnecting...")
 
         try {
