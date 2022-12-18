@@ -63,7 +63,7 @@ class VelocityMain : PanoPluginMain {
 
     override fun getDataFolder(): File = dataFolder.toFile()
 
-    override fun getLogger(): java.util.logging.Logger = logger as java.util.logging.Logger
+    override fun getLogger(): Logger = logger
 
     private fun onEnable() {
         pano = Pano.init(this)
