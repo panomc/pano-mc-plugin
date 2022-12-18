@@ -22,6 +22,10 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://jitpack.io")
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven {
+        name = "papermc"
+        url = uri("https://repo.papermc.io/repository/maven-public/")
+    }
 }
 
 dependencies {
@@ -37,6 +41,10 @@ dependencies {
 
     // paper spigot
     compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
+
+    // velocity
+    compileOnly("com.velocitypowered:velocity-api:3.1.1")
+    annotationProcessor("com.velocitypowered:velocity-api:3.1.1")
 
     implementation("io.vertx:vertx-core:$vertxVersion")
     implementation("io.vertx:vertx-web-client:$vertxVersion")
@@ -83,6 +91,11 @@ tasks {
             copy {
                 from(shadowJar.get().archiveFile.get().asFile.absolutePath)
                 into("../minecraft test servers/Bungeecord/plugins")
+            }
+
+            copy {
+                from(shadowJar.get().archiveFile.get().asFile.absolutePath)
+                into("../minecraft test servers/Velocity/plugins")
             }
         }
 
