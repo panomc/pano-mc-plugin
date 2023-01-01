@@ -2,11 +2,13 @@ package com.panomc.plugins.pano.spigot
 
 import com.panomc.plugins.pano.core.Pano
 import com.panomc.plugins.pano.core.command.Command
+import com.panomc.plugins.pano.core.event.Listener
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.helper.ServerData
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.command.CommandMap
+import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import java.net.URLClassLoader
 import java.util.logging.Logger
@@ -88,6 +90,14 @@ class SpigotMain : JavaPlugin(), PanoPluginMain {
     override fun getPluginClassLoader(): URLClassLoader = classLoader as URLClassLoader
 
     override fun translateColor(text: String): String = ChatColor.translateAlternateColorCodes('&', text)
+
+    override fun registerEventListeners(listeners: List<Listener>) {
+        server.pluginManager.registerEvents(SpigotEventListener(this, listeners), this)
+    }
+
+    override fun unregisterEventListeners(listeners: List<Listener>) {
+        HandlerList.unregisterAll(this)
+    }
 
     override fun getLogger(): Logger = ColoredLogger()
 }

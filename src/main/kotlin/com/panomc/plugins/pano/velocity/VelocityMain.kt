@@ -3,6 +3,7 @@ package com.panomc.plugins.pano.velocity
 import com.google.inject.Inject
 import com.panomc.plugins.pano.core.Pano
 import com.panomc.plugins.pano.core.command.Command
+import com.panomc.plugins.pano.core.event.Listener
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.helper.ServerData
 import com.velocitypowered.api.command.CommandMeta
@@ -135,5 +136,14 @@ class VelocityMain : PanoPluginMain {
     override fun getServerData(): ServerData = serverData
 
     override fun getPluginClassLoader(): URLClassLoader = VelocityMain::class.java.classLoader as URLClassLoader
+
     override fun translateColor(text: String): String = text.replace("&", "§")
+
+    override fun registerEventListeners(listeners: List<Listener>) {
+        server.eventManager.register(this, VelocityEventListener(this, listeners))
+    }
+
+    override fun unregisterEventListeners(listeners: List<Listener>) {
+        server.eventManager.unregisterListeners(this)
+    }
 }

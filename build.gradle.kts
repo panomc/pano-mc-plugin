@@ -54,6 +54,10 @@ dependencies {
     implementation("io.vertx:vertx-config-hocon:$vertxVersion")
     implementation("io.vertx:vertx-json-schema:$vertxVersion")
 
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+
+
     // dagger 2x
     implementation("com.google.dagger:dagger:2.44.2")
     kapt("com.google.dagger:dagger-compiler:2.44.2")

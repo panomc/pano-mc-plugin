@@ -87,6 +87,14 @@ class PlatformManager(
 
     fun getWebSocket() = webSocket
 
+    fun createEventRequest(platformEvent: PlatformEvent): JsonObject {
+        val body = JsonObject()
+
+        body.put("event", platformEvent.name)
+
+        return body
+    }
+
     suspend fun connectNewPlatform(platformAddress: String, platformCode: String) {
         val pingOptions = MinecraftPingOptions().setHostname(serverData.hostAddress()).setPort(serverData.port())
         val pingData = MinecraftPing().getPing(pingOptions)

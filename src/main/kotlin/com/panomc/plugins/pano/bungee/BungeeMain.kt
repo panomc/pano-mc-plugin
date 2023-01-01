@@ -2,6 +2,7 @@ package com.panomc.plugins.pano.bungee
 
 import com.panomc.plugins.pano.core.Pano
 import com.panomc.plugins.pano.core.command.Command
+import com.panomc.plugins.pano.core.event.Listener
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.helper.ServerData
 import net.md_5.bungee.api.ChatColor
@@ -67,4 +68,12 @@ class BungeeMain : Plugin(), PanoPluginMain {
     override fun getPluginClassLoader(): URLClassLoader = javaClass.classLoader as URLClassLoader
 
     override fun translateColor(text: String): String = ChatColor.translateAlternateColorCodes('&', text)
+
+    override fun registerEventListeners(listeners: List<Listener>) {
+        proxy.pluginManager.registerListener(this, BungeeEventListener(this, listeners))
+    }
+
+    override fun unregisterEventListeners(listeners: List<Listener>) {
+        proxy.pluginManager.unregisterListeners(this)
+    }
 }

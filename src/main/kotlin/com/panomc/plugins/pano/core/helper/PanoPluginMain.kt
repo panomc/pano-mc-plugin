@@ -1,6 +1,7 @@
 package com.panomc.plugins.pano.core.helper
 
 import com.panomc.plugins.pano.core.command.Command
+import com.panomc.plugins.pano.core.event.Listener
 import java.io.File
 import java.net.URLClassLoader
 import java.util.logging.Logger
@@ -25,4 +26,8 @@ interface PanoPluginMain {
     fun getPluginClassLoader(): URLClassLoader
 
     fun translateColor(text: String): String
+
+    fun registerEventListeners(listeners: List<Listener>)
+
+    fun unregisterEventListeners(listeners: List<Listener>)
 }

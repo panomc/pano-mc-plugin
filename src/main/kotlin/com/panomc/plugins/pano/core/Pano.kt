@@ -3,6 +3,7 @@ package com.panomc.plugins.pano.core
 import com.panomc.plugins.pano.core.annotation.Boot
 import com.panomc.plugins.pano.core.command.CommandManager
 import com.panomc.plugins.pano.core.config.ConfigManager
+import com.panomc.plugins.pano.core.event.EventManager
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.schedule.ScheduleManager
 import io.vertx.core.Vertx
@@ -75,6 +76,7 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
 
     private lateinit var applicationContext: AnnotationConfigApplicationContext
     private lateinit var configManager: ConfigManager
+    private lateinit var eventManager: EventManager
     private lateinit var commandManager: CommandManager
     private lateinit var scheduleManager: ScheduleManager
     private lateinit var platformManager: PlatformManager
@@ -105,6 +107,8 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
 
         scheduleManager.disable()
 
+        eventManager.disable()
+
         platformManager.stop()
 
         super.stop()
@@ -128,6 +132,8 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
         initConfigManager()
 
         initCommandManager()
+
+        initEventManager()
     }
 
     private fun initDependencyInjection() {
@@ -158,5 +164,13 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
         commandManager = applicationContext.getBean(CommandManager::class.java)
 
         commandManager.init()
+    }
+
+    private fun initEventManager() {
+        logger.info("Initializing event manager")
+
+        eventManager = applicationContext.getBean(EventManager::class.java)
+
+        eventManager.init()
     }
 }

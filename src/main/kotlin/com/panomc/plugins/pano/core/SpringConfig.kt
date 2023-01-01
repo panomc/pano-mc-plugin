@@ -2,6 +2,7 @@ package com.panomc.plugins.pano.core
 
 import com.panomc.plugins.pano.core.command.CommandManager
 import com.panomc.plugins.pano.core.config.ConfigManager
+import com.panomc.plugins.pano.core.event.EventManager
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 import com.panomc.plugins.pano.core.schedule.ScheduleManager
 import io.vertx.core.Vertx
@@ -52,6 +53,11 @@ open class SpringConfig {
     @Lazy
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     open fun scheduleManager() = ScheduleManager(panoPluginMain)
+
+    @Bean
+    @Lazy
+    @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
+    open fun eventManager(platformManager: PlatformManager) = EventManager(panoPluginMain, platformManager)
 
     @Bean
     @Lazy
