@@ -1,12 +1,14 @@
 package com.panomc.plugins.pano.core.event
 
 import com.panomc.plugins.pano.core.PlatformManager
+import com.panomc.plugins.pano.core.event.listeners.OnPlayerDisconnect
 import com.panomc.plugins.pano.core.event.listeners.OnPlayerJoin
 import com.panomc.plugins.pano.core.helper.PanoPluginMain
 
 class EventManager(private val panoPluginMain: PanoPluginMain, platformManager: PlatformManager) {
-    private val eventListeners = listOf<Listener>(
-        OnPlayerJoin(platformManager)
+    private val eventListeners = listOf(
+        OnPlayerJoin(platformManager),
+        OnPlayerDisconnect(platformManager)
     )
 
     fun init() {

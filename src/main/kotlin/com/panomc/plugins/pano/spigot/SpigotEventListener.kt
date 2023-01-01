@@ -8,6 +8,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
 
 class SpigotEventListener(
     private val pluginMain: PanoPluginMain,
@@ -35,6 +36,15 @@ class SpigotEventListener(
             .forEach { listener ->
                 listener.handle(this, event.player)
                 event.player.uniqueId
+            }
+    }
+
+    @EventHandler
+    fun onPlayerDisconnect(event: PlayerQuitEvent) {
+        listeners
+            .filter { it.eventType == EventType.ON_PLAYER_DISCONNECT }
+            .forEach { listener ->
+                listener.handle(this, event.player)
             }
     }
 }
