@@ -11,7 +11,8 @@ interface EventHelper {
         data class PlayerData(
             val uuid: UUID,
             val username: String,
-            val ping: Long
+            val ping: Long,
+            val loginTime: Long = System.currentTimeMillis()
         )
     }
 }
