@@ -5,8 +5,9 @@ import com.panomc.plugins.pano.core.PlatformManager
 import com.panomc.plugins.pano.core.event.EventType
 import com.panomc.plugins.pano.core.event.Listener
 import com.panomc.plugins.pano.core.helper.EventHelper
+import com.panomc.plugins.pano.core.helper.PanoPluginMain
 
-class OnPlayerJoin(private val platformManager: PlatformManager) : Listener {
+class OnPlayerJoin(private val platformManager: PlatformManager, private val pluginMain: PanoPluginMain) : Listener {
     override val eventType: EventType = EventType.ON_PLAYER_JOIN
 
     override fun handle(eventHelper: EventHelper, vararg args: Any) {
@@ -16,6 +17,7 @@ class OnPlayerJoin(private val platformManager: PlatformManager) : Listener {
         val eventRequest = platformManager.createEventRequest(PlatformEvent.ON_PLAYER_JOIN)
 
         eventRequest.put("player", playerData)
+        eventRequest.put("playerCount", pluginMain.getServerData().playerCount())
 
         platformManager.getWebSocket()?.writeTextMessage(eventRequest.encode())
     }
