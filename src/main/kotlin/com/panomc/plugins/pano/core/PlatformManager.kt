@@ -237,6 +237,8 @@ class PlatformManager(
 
         this.webSocket = webSocket
 
+        onConnectionEstablished()
+
         webSocket.closeHandler {
             onWebSocketClosed()
         }
@@ -244,6 +246,37 @@ class PlatformManager(
         webSocket.handler {
             onHandleWebSocket(it)
         }
+    }
+
+    private fun onConnectionEstablished() {
+        val pingOptions = MinecraftPingOptions().setHostname(serverData.hostAddress()).setPort(serverData.port())
+        val pingData = MinecraftPing().getPing(pingOptions)
+
+        val eventRequest = createEventRequest(PlatformEvent.ON_SERVER_CONNECT)
+
+        eventRequest
+            .put("serverName", serverData.serverName())
+            .put("playerCount", serverData.playerCount())
+            .put("maxPlayerCount", serverData.maxPlayerCount())
+            .put("serverType", serverData.serverType())
+            .put("serverVersion", serverData.serverVersion())
+            .put("host", serverData.hostAddress())
+            .put("port", serverData.port())
+            .put("startTime", Pano.serverStartTime)
+
+        if (pingData.favicon != null) {
+            eventRequest
+                .put("favicon", pingData.favicon)
+        }
+
+        if (pingData.description != null) {
+            eventRequest
+                .put("motd", pingData.description.text)
+        }
+
+        webSocket?.writeTextMessage(eventRequest.encode())
+
+        logger.info(pluginMain.translateColor("&eSent server info update to the platform."))
     }
 
     private fun onWebSocketClosed() {
