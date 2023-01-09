@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.net.URLClassLoader
 import java.util.jar.Manifest
+import kotlin.properties.Delegates
 
 
 @Boot
@@ -39,6 +40,9 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
                 "RELEASE"
             }
         }
+
+        var serverStartTime by Delegates.notNull<Long>()
+            private set
 
         val ENVIRONMENT =
             if (mode != "DEVELOPMENT" && System.getenv("EnvironmentType").isNullOrEmpty())
@@ -117,6 +121,8 @@ class Pano(private val panoPluginMain: PanoPluginMain) : CoroutineVerticle() {
     }
 
     internal fun onServerStart() {
+        serverStartTime = System.currentTimeMillis()
+
         platformManager.start()
     }
 
