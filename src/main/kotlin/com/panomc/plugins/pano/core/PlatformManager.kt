@@ -121,6 +121,7 @@ class PlatformManager(
             .put("serverVersion", serverData.serverVersion())
             .put("host", serverData.hostAddress())
             .put("port", serverData.port())
+            .put("startTime", Pano.serverStartTime)
 
         if (pingData.favicon != null) {
             requestBody
