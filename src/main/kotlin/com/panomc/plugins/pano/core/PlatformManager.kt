@@ -87,10 +87,10 @@ class PlatformManager(
 
     fun getWebSocket() = webSocket
 
-    fun createEventRequest(platformEvent: PlatformEvent): JsonObject {
+    fun createEventRequest(serverEvent: ServerEvent): JsonObject {
         val body = JsonObject()
 
-        body.put("event", platformEvent.name)
+        body.put("event", serverEvent.name)
 
         return body
     }
@@ -252,7 +252,7 @@ class PlatformManager(
         val pingOptions = MinecraftPingOptions().setHostname(serverData.hostAddress()).setPort(serverData.port())
         val pingData = MinecraftPing().getPing(pingOptions)
 
-        val eventRequest = createEventRequest(PlatformEvent.ON_SERVER_CONNECT)
+        val eventRequest = createEventRequest(ServerEvent.ON_SERVER_CONNECT)
 
         eventRequest
             .put("serverName", serverData.serverName())
