@@ -68,7 +68,7 @@ jobs:
           java-version: 17
 
       - name: Build with Gradle
-        uses: gradle/actions/setup-gradle@v
+        uses: gradle/actions/setup-gradle@v3
         with:
           arguments: |
             ${{ steps.extract_branch.outputs.branch == 'main' && 'build' || 'buildDev' }}
