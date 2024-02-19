@@ -1,18 +1,19 @@
 val vertxVersion = "4.3.7"
 
 plugins {
-    java
     kotlin("jvm") version "1.8.0"
     kotlin("kapt") version "1.8.0"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    `maven-publish`
 }
 
 group = "com.panomc.plugins"
-version = "1.0"
+version =
+    (if (project.hasProperty("version") && project.findProperty("version") != "unspecified") project.findProperty("version") else "local-build")!!
 
-val buildType = "alpha"
+val buildType = project.findProperty("buildType") as String? ?: "alpha"
 val timeStamp: String by project
-val fullVersion = if (project.hasProperty("timeStamp")) "$version-$buildType-$timeStamp" else "$version-$buildType"
+val buildDir by extra { file("${rootProject.layout.buildDirectory.get()}/libs") }
 
 repositories {
     mavenCentral()
@@ -65,6 +66,10 @@ dependencies {
     implementation("org.springframework:spring-context:5.3.24")
 }
 
+tasks.named("jar").configure {
+    enabled = false
+}
+
 tasks {
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
@@ -72,17 +77,6 @@ tasks {
 
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
-    }
-
-    register("copyJarToRoot") {
-        doLast {
-            copy {
-                from(shadowJar.get().archiveFile.get().asFile.absolutePath)
-                into("./")
-            }
-        }
-
-        dependsOn(shadowJar)
     }
 
     register("copyJar") {
@@ -102,12 +96,10 @@ tasks {
                 into("../minecraft test servers/Velocity/plugins")
             }
         }
-
-        dependsOn(shadowJar)
     }
 
     build {
-        dependsOn("copyJarToRoot")
+        dependsOn(shadowJar)
     }
 
     register("buildDev") {
@@ -116,22 +108,18 @@ tasks {
 
     // This task builds and copys jar into server folders for test
     register("buildPluginDev") {
+        dependsOn("buildDev")
         dependsOn("copyJar")
-        dependsOn("build")
     }
 
     shadowJar {
         manifest {
             val attrMap = mutableMapOf<String, String>()
 
-            if (
-                project.gradle.startParameter.taskNames.contains("buildDev") ||
-                project.gradle.startParameter.taskNames.contains("buildPluginDev")
-            ) {
+            if (project.gradle.startParameter.taskNames.contains("buildDev"))
                 attrMap["MODE"] = "DEVELOPMENT"
-            }
 
-            attrMap["VERSION"] = fullVersion
+            attrMap["VERSION"] = version.toString()
             attrMap["BUILD_TYPE"] = buildType
 
             attributes(attrMap)
@@ -139,10 +127,32 @@ tasks {
 
         relocate("io.netty", "vertx.io.netty")
 
-        if (project.hasProperty("timeStamp")) {
-            archiveFileName.set("Pano-MC-plugin-${timeStamp}.jar")
-        } else {
-            archiveFileName.set("Pano-MC-plugin.jar")
+        archiveFileName.set("${rootProject.name}-${version}.jar")
+
+        if (project.gradle.startParameter.taskNames.contains("publish")) {
+            archiveFileName.set(archiveFileName.get().lowercase())
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "pano-mc-plugin"
+            url = uri("https://maven.pkg.github.com/panocms/pano-mc-plugin")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME_GITHUB")
+                password = project.findProperty("gpr.token") as String? ?: System.getenv("TOKEN_GITHUB")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("shadow") {
+            project.extensions.configure<com.github.jengelman.gradle.plugins.shadow.ShadowExtension> {
+                artifactId = "pano-mc"
+                component(this@create)
+            }
         }
     }
 }

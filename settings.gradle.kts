@@ -1,2 +1,2 @@
-rootProject.name = "Pano Core"
+rootProject.name = "Pano MC"
 
