@@ -1,8 +1,8 @@
-val vertxVersion = "4.3.7"
+val vertxVersion = "4.5.1"
 
 plugins {
-    kotlin("jvm") version "1.8.0"
-    kotlin("kapt") version "1.8.0"
+    kotlin("jvm") version "1.9.20"
+    kotlin("kapt") version "1.9.20"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     `maven-publish`
 }
@@ -56,14 +56,10 @@ dependencies {
     implementation("io.vertx:vertx-json-schema:$vertxVersion")
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.14.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")
 
 
-    // dagger 2x
-    implementation("com.google.dagger:dagger:2.44.2")
-    kapt("com.google.dagger:dagger-compiler:2.44.2")
-
-    implementation("org.springframework:spring-context:5.3.24")
+    implementation("org.springframework:spring-context:5.3.32")
 }
 
 tasks.named("jar").configure {
