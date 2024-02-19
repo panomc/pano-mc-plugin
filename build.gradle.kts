@@ -71,14 +71,6 @@ tasks.named("jar").configure {
 }
 
 tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-
     register("copyJar") {
         doLast {
             copy {
